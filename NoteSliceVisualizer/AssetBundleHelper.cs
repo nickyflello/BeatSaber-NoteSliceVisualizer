@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BS_Utils.Utilities;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -6,6 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace NoteSliceVisualizer
 {
@@ -25,7 +27,16 @@ namespace NoteSliceVisualizer
 		public static GameObject Instantiate(string name)
 		{
 			GameObject template = _assetBundle.LoadAsset<GameObject>(name);
-			return GameObject.Instantiate(template);
+			GameObject obj = GameObject.Instantiate(template);
+			
+			// Replace any UI materials with beat saber ones
+			foreach (RawImage image in obj.GetComponentsInChildren<RawImage>())
+			{
+				Console.WriteLine($"[NoteSliceVisualizer] Replaced {image.gameObject.name}'s material with {Utilities.UiNoGlow.name}.");
+				image.material = Utilities.UiNoGlow;
+			}
+
+			return obj;
 		}
 
 	}

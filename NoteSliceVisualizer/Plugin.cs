@@ -12,6 +12,11 @@ namespace NoteSliceVisualizer
 		SliceController[] _sliceControllers;
 		bool _logNotesCut = false;
 
+		private void MenuSceneLoadedFresh()
+		{
+			Utilities.Initialize();
+		}
+
 		private void GameSceneLoaded()
 		{
 			_colorManager = GameObject.FindObjectOfType<ColorManager>();
@@ -24,13 +29,16 @@ namespace NoteSliceVisualizer
 			canvasA.transform.Translate(-1.5f, 0f, 0f);
 			canvasB.transform.Translate(1.5f, 0f, 0f);
 
-			Color colorA = _colorManager.ColorForSaberType(Saber.SaberType.SaberA);
-			Color colorB = _colorManager.ColorForSaberType(Saber.SaberType.SaberB);
+			Color colorNoteA = _colorManager.ColorForNoteType(NoteType.NoteA);
+			Color colorNoteB = _colorManager.ColorForNoteType(NoteType.NoteB);
+
+			Console.WriteLine($"[NoteSliceVisualizer] Color NoteA: {colorNoteA}");
+			Console.WriteLine($"[NoteSliceVisualizer] Color NoteB: {colorNoteB}");
 
 			_sliceControllers = new SliceController[]
 			{
-				new SliceController(canvasA, colorA),
-				new SliceController(canvasB, colorB),
+				new SliceController(canvasA, colorNoteA),
+				new SliceController(canvasB, colorNoteB),
 			};
 		}
 
@@ -54,6 +62,7 @@ namespace NoteSliceVisualizer
 		public void OnApplicationStart()
 		{
 			BS_Utils.Utilities.BSEvents.OnLoad();
+			BS_Utils.Utilities.BSEvents.menuSceneLoadedFresh += MenuSceneLoadedFresh;
 			BS_Utils.Utilities.BSEvents.gameSceneLoaded += GameSceneLoaded;
 			AssetBundleHelper.LoadAssetBundle();
 		}
