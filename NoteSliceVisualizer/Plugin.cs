@@ -9,7 +9,7 @@ namespace NoteSliceVisualizer
 		ColorManager _colorManager;
 		BeatmapObjectSpawnController _spawnController;
 
-		SliceController[] _sliceControllers;
+		SliceController[,] _sliceControllers;
 		bool _logNotesCut = false;
 
 		private void MenuSceneLoadedFresh()
@@ -23,30 +23,36 @@ namespace NoteSliceVisualizer
 			_spawnController = GameObject.FindObjectOfType<BeatmapObjectSpawnController>();
 			_spawnController.noteWasCutEvent += OnNoteCut;
 
-			GameObject canvasA = AssetBundleHelper.Instantiate("Canvas");
-			GameObject canvasB = AssetBundleHelper.Instantiate("Canvas");
-
-			canvasA.transform.Translate(-1.5f, 0f, 0f);
-			canvasB.transform.Translate(1.5f, 0f, 0f);
-
-			Color colorNoteA = _colorManager.ColorForNoteType(NoteType.NoteA);
 			Color colorNoteB = _colorManager.ColorForNoteType(NoteType.NoteB);
 
-			Console.WriteLine($"[NoteSliceVisualizer] Color NoteA: {colorNoteA}");
-			Console.WriteLine($"[NoteSliceVisualizer] Color NoteB: {colorNoteB}");
-
-			_sliceControllers = new SliceController[]
+			GameObject[,] canvases = new GameObject[4, 3];
+			_sliceControllers = new SliceController[4, 3];
+			for (int x = 0; x < 4; ++x)
 			{
-				new SliceController(canvasA, colorNoteA),
-				new SliceController(canvasB, colorNoteB),
-			};
+				for (int y = 0; y < 3; ++y)
+				{
+					GameObject canvas = canvases[x, y];
+
+					float xPos = -1.2f + (0.8f * x);
+					float yPos = 0f + (0.8f * y) - 1.5f;
+
+					canvas = AssetBundleHelper.Instantiate("Canvas");
+					canvas.transform.localScale *= 0.25f;
+					canvas.transform.Translate(xPos, yPos, 0f);
+					_sliceControllers[x, y] = new SliceController(canvas);
+				}
+			}
 		}
 
 		private void OnNoteCut(BeatmapObjectSpawnController spawnController, INoteController noteController, NoteCutInfo info)
 		{
 			Vector3 center = noteController.noteTransform.position;
 			Vector3 localCutPoint = info.cutPoint - center;
-			_sliceControllers[(int)info.saberType].UpdateSlice(localCutPoint, info.cutNormal);
+
+			NoteData data = noteController.noteData;
+			SliceController sliceController = _sliceControllers[data.lineIndex, (int)data.noteLineLayer];
+			sliceController.UpdateBlockColor(_colorManager.ColorForSaberType(info.saberType));
+			sliceController.UpdateSlice(localCutPoint, info.cutNormal);
 
 			if (_logNotesCut)
 			{
@@ -86,11 +92,19 @@ namespace NoteSliceVisualizer
 
 		public void OnUpdate()
 		{
+			if (_sliceControllers != null)
+			{
+				foreach (SliceController sliceController in _sliceControllers)
+				{
+					sliceController?.Update();
+				}
+			}
 		}
 
 		public void OnFixedUpdate()
 		{
 		}
+
 		#endregion // IBeatSaberPlugin
 	}
 }
