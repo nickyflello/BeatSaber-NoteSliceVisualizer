@@ -70,6 +70,7 @@ namespace NoteSliceVisualizer
 			BS_Utils.Utilities.BSEvents.OnLoad();
 			BS_Utils.Utilities.BSEvents.menuSceneLoadedFresh += MenuSceneLoadedFresh;
 			BS_Utils.Utilities.BSEvents.gameSceneLoaded += GameSceneLoaded;
+			ConfigHelper.LoadConfig();
 			AssetBundleHelper.LoadAssetBundle();
 		}
 
