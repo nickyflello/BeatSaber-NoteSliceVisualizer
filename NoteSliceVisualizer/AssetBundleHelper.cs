@@ -13,31 +13,47 @@ namespace NoteSliceVisualizer
 {
 	public static class AssetBundleHelper
 	{
-		static AssetBundle _assetBundle;
+		private static AssetBundle _assetBundle;
+
+		public static GameObject Canvas;
+		public static Texture TriangleTexture;
 
 		public static void LoadAssetBundle()
 		{
-			Assembly assembly = Assembly.GetExecutingAssembly();
-			using (Stream stream = assembly.GetManifestResourceStream("NoteSliceVisualizer.noteslicebundle"))
+			if (_assetBundle == null)
 			{
-				_assetBundle = AssetBundle.LoadFromStream(stream);
+				Console.WriteLine("[NoteSliceVisualizer] Loading Asset Bundle");
+
+				Assembly assembly = Assembly.GetExecutingAssembly();
+				using (Stream stream = assembly.GetManifestResourceStream("NoteSliceVisualizer.noteslicebundle"))
+				{
+					_assetBundle = AssetBundle.LoadFromStream(stream);
+				}
+
+				Canvas = LoadAsset<GameObject>("Canvas");
+				TriangleTexture = LoadAsset<Texture>("Triangle");
 			}
 		}
 
-		public static GameObject Instantiate(string name)
+		private static T LoadAsset<T>(string name)
+			where T : UnityEngine.Object
 		{
-			GameObject template = _assetBundle.LoadAsset<GameObject>(name);
-			GameObject obj = GameObject.Instantiate(template);
-			
+			T obj = _assetBundle.LoadAsset<T>(name);
+
 			// Replace any UI materials with beat saber ones
-			foreach (RawImage image in obj.GetComponentsInChildren<RawImage>())
+			if (obj is GameObject gameObject)
 			{
-				Console.WriteLine($"[NoteSliceVisualizer] Replaced {image.gameObject.name}'s material with {Utilities.UiNoGlow.name}.");
-				image.material = Utilities.UiNoGlow;
+				foreach (Graphic graphic in gameObject.GetComponentsInChildren<Graphic>())
+				{
+					graphic.material = Utilities.UiNoGlow;
+				}
+			}
+			else if (obj is Graphic graphic)
+			{
+				graphic.material = Utilities.UiNoGlow;
 			}
 
 			return obj;
 		}
-
 	}
 }

@@ -13,10 +13,8 @@ namespace NoteSliceVisualizer
 				A = a;
 			}
 
-			public UnityEngine.Color ToUnityColor()
-			{
-				return new UnityEngine.Color(R, G, B, A);
-			}
+			public static implicit operator UnityEngine.Color(Color c)
+				=> new UnityEngine.Color(c.R, c.G, c.B, c.A);
 
 			public float R;
 			public float G;
@@ -33,38 +31,36 @@ namespace NoteSliceVisualizer
 				Z = z;
 			}
 
-			public UnityEngine.Vector3 ToUnityVector()
-			{
-				return new UnityEngine.Vector3(X, Y, Z);
-			}
+			public static implicit operator UnityEngine.Vector3(Vector3 v)
+				=> new UnityEngine.Vector3(v.X, v.Y, v.Z);
 
 			public float X;
 			public float Y;
 			public float Z;
 		}
 
-		//public bool Enabled = true;
-		//public bool UseDefaultNoteColors;
+		public bool Enabled = true;
+		public bool UseCustomNoteColors = true;
 
-		//public Vector3 Position = new Vector3(0f, 0f, 18f);
-		//public Vector3 Rotation = new Vector3(0f, 0f, 0f);
-		//public float Scale = 1f;
+		public Vector3 Position = new Vector3(0f, 1.5f, 16f);
+		public Vector3 Rotation = new Vector3(0f, 0f, 0f);
+		public float Scale = 1f;
 		public float Alpha = 1f;
 
 		public float PopDuration = 0.1f;
 		public float DelayDuration = 0.1f;
 		public float FadeDuration = 0.3f;
 
-		public Color CutLineColor = new Color(0f, 0f, 0f);
+		public Color CutLineColor = new Color(1f, 1f, 1f);
 		public float CutLineWidth = 1f;
-		//public float CutLineScale;
-		//public bool CutLineTriangle = false;
+		public float CutLineLengthScale = 1f;
+		public bool CutLineUseTriangleTexture = true;
 
 		//public bool DisplayGrid = false;
 		//public float GridAlpha = 0.1f;
 
-		//public float UISeperation = ?;
-		//public bool Use2Notes = false;
+		public float Separation = 1f;
+		public bool TwoNoteMode = false;
 		//public bool LogToFile = false;
 	}
 }
