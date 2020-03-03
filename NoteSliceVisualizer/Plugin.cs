@@ -96,12 +96,13 @@ namespace NoteSliceVisualizer
 			{
 				Vector3 center = noteController.noteTransform.position;
 				Vector3 localCutPoint = info.cutPoint - center;
+				float rotation = noteController.noteTransform.eulerAngles.z;
 
 				if (TwoNoteMode)
 				{
 					int index = (int)info.saberType;
 					SliceController sliceController = _sliceControllers[index];
-					sliceController.UpdateSlice(localCutPoint, info.cutNormal);
+					sliceController.UpdateSlice(localCutPoint, info.cutNormal, rotation);
 				}
 				else
 				{
@@ -110,7 +111,7 @@ namespace NoteSliceVisualizer
 
 					Color color = UseCustomNoteColors ? _colorManager.ColorForSaberType(info.saberType) : _defaultColors[(int)info.saberType];
 					sliceController.UpdateBlockColor(color);
-					sliceController.UpdateSlice(localCutPoint, info.cutNormal);
+					sliceController.UpdateSlice(localCutPoint, info.cutNormal, rotation);
 				}
 
 				if (_logNotesCut)
