@@ -48,11 +48,12 @@ namespace NoteSliceVisualizer
 			if (TwoNoteMode)
 			{
 				_sliceControllers = new SliceController[2];
+				float minX = -Separation * 0.5f;
 				for (int x = 0; x < 2; ++x)
 				{
 					int index = x;
-					float posX = -0.4f + (Separation * x);
-					float posY = 1.5f;
+					float posX = minX + (Separation * x);
+					float posY = 0f;
 
 					SliceController controller = CreateSliceController(posX, posY);
 					Color color = UseCustomNoteColors ? _colorManager.ColorForNoteType((NoteType)index) : _defaultColors[index];
@@ -63,12 +64,13 @@ namespace NoteSliceVisualizer
 			else
 			{
 				_sliceControllers = new SliceController[12];
+				float minX = -Separation * 1.5f;
 				for (int x = 0; x < 4; ++x)
 				{
 					for (int y = 0; y < 3; ++y)
 					{
 						int index = 3 * x + y;
-						float posX = -1.2f + (Separation * x);
+						float posX = minX + (Separation * x);
 						float posY = (Separation * y);
 
 						_sliceControllers[index] = CreateSliceController(posX, posY);
@@ -97,6 +99,7 @@ namespace NoteSliceVisualizer
 				Vector3 center = noteController.noteTransform.position;
 				Vector3 localCutPoint = info.cutPoint - center;
 				float rotation = noteController.noteTransform.eulerAngles.z;
+				rotation = Mathf.Round(rotation / 45f) * 45f;
 
 				if (TwoNoteMode)
 				{
@@ -173,6 +176,12 @@ namespace NoteSliceVisualizer
 				{
 					sliceController?.Update();
 				}
+			}
+
+			// Reload config
+			if (Input.GetKeyDown(KeyCode.F5))
+			{
+				ConfigHelper.LoadConfig();
 			}
 		}
 

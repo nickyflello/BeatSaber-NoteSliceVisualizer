@@ -20,6 +20,7 @@ namespace NoteSliceVisualizer
 		private readonly RawImage _cutOffsetImage;
 		private Color _backgroundColor;
 		private float _timeSinceSliced;
+		private bool _isAlive = true;
 
 		private readonly Texture _cutLineTexture = ConfigHelper.Config.CutLineUseTriangleTexture ? AssetBundleHelper.TriangleTexture : null;
 		private readonly Color _cutLineColor = ConfigHelper.Config.CutLineColor;
@@ -78,10 +79,12 @@ namespace NoteSliceVisualizer
 			Vector3 cutDirection = new Vector3(-cutPlaneNormal.y, cutPlaneNormal.x).normalized;
 			float cutRotation = Mathf.Atan2(cutDirection.y, cutDirection.x) * Mathf.Rad2Deg;
 
-			_blockTransform.localRotation = Quaternion.Euler(0f, 0f, noteRotation);
-			_blockMaskTransform.localRotation = Quaternion.Euler(0f, 0f, noteRotation);
-			_noteMaskTransform.localRotation = Quaternion.Euler(0f, 0f, noteRotation);
-			_noteMaskInverseTransform.localRotation = Quaternion.Euler(0f, 0f, -noteRotation);
+			Quaternion noteRotationQuaternion = Quaternion.Euler(0f, 0f, noteRotation);
+			Quaternion noteInverseRotationQuaternion = Quaternion.Euler(0f, 0f, -noteRotation);
+			_blockTransform.localRotation = noteRotationQuaternion;
+			_blockMaskTransform.localRotation = noteRotationQuaternion;
+			_noteMaskTransform.localRotation = noteRotationQuaternion;
+			_noteMaskInverseTransform.localRotation = noteInverseRotationQuaternion;
 
 			_sliceTransform.localPosition = uiCutPoint;
 			_sliceTransform.localRotation = Quaternion.Euler(0f, 0f, cutRotation);
@@ -96,11 +99,12 @@ namespace NoteSliceVisualizer
 			_cutOffsetTransform.localRotation = Quaternion.Euler(0f, 0f, missedAreaRotation);
 
 			_timeSinceSliced = 0f;
+			_isAlive = true;
 		}
 
 		public void Update()
 		{
-			if (_shouldUpdateColor && _canvasGroup != null)
+			if (_shouldUpdateColor && _canvasGroup != null && _isAlive)
 			{
 				float popT = _timeSinceSliced / _popDuration;
 				float fadeT = (_timeSinceSliced - _delayDuration) / _fadeDuration;
@@ -111,7 +115,14 @@ namespace NoteSliceVisualizer
 				_backgroundImage.color = _backgroundColor * pop;
 				_canvasGroup.alpha = a;
 
-				_timeSinceSliced += Time.deltaTime;
+				if (fadeT >= 1.0f)
+				{
+					_isAlive = false;
+				}
+				else
+				{
+					_timeSinceSliced += Time.deltaTime;
+				}
 			}
 		}
 	}
