@@ -48,12 +48,14 @@ namespace NoteSliceVisualizer
 		public float Alpha = 1f;
 
 		public float PopDuration = 0.1f;
-		public float DelayDuration = 0.1f;
+		public float DelayDuration = 0.15f;
 		public float FadeDuration = 0.3f;
 
 		public Color CutLineColor = new Color(1f, 1f, 1f);
+		public Color CutOffsetColor = new Color(0f, 0f, 0f, 0.7f);
 		public float CutLineWidth = 1f;
 		public float CutLineLengthScale = 1f;
+		public float CutLineSensitivity = 1f;
 		public bool CutLineUseTriangleTexture = true;
 
 		//public bool DisplayGrid = false;

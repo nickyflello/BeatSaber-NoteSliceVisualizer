@@ -22,7 +22,6 @@ namespace NoteSliceVisualizer
 			{
 				Console.WriteLine("[NoteSliceVisualizer] Creating Default Config");
 				Config = new Config();
-				SaveConfig();
 			}
 			else
 			{
@@ -30,6 +29,9 @@ namespace NoteSliceVisualizer
 				string data = File.ReadAllText(ConfigFilePath);
 				Config = JsonConvert.DeserializeObject<Config>(data);
 			}
+
+			// TODO: Save config version number
+			SaveConfig();
 		}
 
 		public static void SaveConfig()
