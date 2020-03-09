@@ -1,4 +1,5 @@
-﻿using IPA;
+﻿using BeatSaberMarkupLanguage.Settings;
+using IPA;
 using System;
 using UnityEngine;
 
@@ -166,6 +167,10 @@ namespace NoteSliceVisualizer
 
 		public void OnActiveSceneChanged(global::UnityEngine.SceneManagement.Scene prevScene, global::UnityEngine.SceneManagement.Scene nextScene)
 		{
+			if (nextScene.name == "MenuViewControllers" && prevScene.name == "EmptyTransition")
+			{
+				BSMLSettings.instance.AddSettingsMenu("Note Slice Vis", "NoteSliceVisualizer.UI.SettingsUI.bsml", SettingsUI.instance);
+			}
 		}
 
 		public void OnUpdate()

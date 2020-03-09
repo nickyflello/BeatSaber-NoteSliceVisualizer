@@ -1,0 +1,16 @@
+﻿<settings-container>
+  <bool-setting text='Enabled' value='boolEnable'/>
+  <bool-setting text='Custom Note Colors' value='boolUseCustomNoteColors'/>
+  <slider-setting text='Position X' min='-20' max='20' increment='0.5' value='sliderPositionX' integer-only='false' />
+  <slider-setting text='Position Y' min='-20' max='20' increment='0.5' value='sliderPositionY' integer-only='false' />
+  <slider-setting text='Position Z' min='-20' max='20' increment='0.5' value='sliderPositionZ' integer-only='false' />
+  <slider-setting text='Rotation X' min='0' max='360' increment='5' value='sliderRotationX' integer-only='false' />
+  <slider-setting text='Rotation Y' min='0' max='360' increment='5' value='sliderRotationY' integer-only='false' />
+  <slider-setting text='Rotation Z' min='0' max='360' increment='5' value='sliderRotationZ' integer-only='false' />
+  <slider-setting text='Scale' min='0' max='5' increment='0.1' value='sliderScale' integer-only='false' />
+  <slider-setting text='Alpha' min='0' max='1' increment='0.1' value='sliderAlpha' integer-only='false' />
+  <slider-setting text='Pop Duration' min='0' max='3' increment='0.05' value='sliderPopDuration' integer-only='false' />
+  <slider-setting text='Delay Duration' min='0' max='3' increment='0.05' value='sliderDelayDuration' integer-only='false' />
+  <slider-setting text='Fade Duration' min='0' max='3' increment='0.05' value='sliderFadeDuration' integer-only='false' />
+  <color-setting text='CutLineColor' value='colorCutLineColor'/>
+</settings-container>
