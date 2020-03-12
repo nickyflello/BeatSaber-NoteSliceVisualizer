@@ -16,6 +16,7 @@ namespace NoteSliceVisualizer
 		private static AssetBundle _assetBundle;
 
 		public static GameObject Canvas;
+		public static GameObject NoteUI;
 		public static Texture TriangleTexture;
 
 		public static void LoadAssetBundle()
@@ -31,6 +32,7 @@ namespace NoteSliceVisualizer
 				}
 
 				Canvas = LoadAsset<GameObject>("Canvas");
+				NoteUI = LoadAsset<GameObject>("NoteUI");
 				TriangleTexture = LoadAsset<Texture>("Triangle");
 			}
 		}

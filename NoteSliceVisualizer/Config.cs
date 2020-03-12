@@ -51,8 +51,10 @@ namespace NoteSliceVisualizer
 		public float DelayDuration = 0.15f;
 		public float FadeDuration = 0.3f;
 
+		public bool RotateUIWithNote = true;
+		public float NoteArrowAlpha = 0.5f;
 		public Color CutLineColor = new Color(1f, 1f, 1f);
-		public Color CutOffsetColor = new Color(0f, 0f, 0f, 0.7f);
+		public Color CutOffsetColor = new Color(0f, 0f, 0f, 0.75f);
 		public float CutLineWidth = 1f;
 		public float CutLineLengthScale = 1f;
 		public float CutLineSensitivity = 1f;
