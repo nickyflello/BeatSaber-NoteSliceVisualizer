@@ -4,10 +4,11 @@ using UnityEngine;
 
 namespace NoteSliceVisualizer
 {
-	public class Plugin : IBeatSaberPlugin
+	[Plugin(RuntimeOptions.SingleStartInit)]
+	public class Plugin
 	{
 		ColorManager _colorManager;
-		BeatmapObjectSpawnController _spawnController;
+		BeatmapObjectManager _spawnController;
 
 		Transform _parentCanvas;
 		SliceController[] _sliceControllers;
@@ -40,7 +41,7 @@ namespace NoteSliceVisualizer
 			}
 
 			_colorManager = GameObject.FindObjectOfType<ColorManager>();
-			_spawnController = GameObject.FindObjectOfType<BeatmapObjectSpawnController>();
+			_spawnController = GameObject.FindObjectOfType<BeatmapObjectManager>();
 			_spawnController.noteWasCutEvent += OnNoteCut;
 
 			_parentCanvas = GameObject.Instantiate(AssetBundleHelper.Canvas).transform;
@@ -88,10 +89,10 @@ namespace NoteSliceVisualizer
 			GameObject slicedNoteUI = GameObject.Instantiate(AssetBundleHelper.NoteUI);
 			slicedNoteUI.transform.SetParent(_parentCanvas.transform, false);
 			slicedNoteUI.transform.localPosition = new Vector3(posX, posY);
-			return new SliceController(slicedNoteUI);
+			return slicedNoteUI.AddComponent<SliceController>();
 		}
 
-		private void OnNoteCut(BeatmapObjectSpawnController spawnController, INoteController noteController, NoteCutInfo info)
+		private void OnNoteCut(INoteController noteController, NoteCutInfo info)
 		{
 			NoteData data = noteController.noteData;
 			if (ShouldDisplayNote(data, info))
@@ -141,7 +142,7 @@ namespace NoteSliceVisualizer
 				layer <= 2));
 		}
 
-		#region IBeatSaberPlugin
+		[OnStart]
 		public void OnApplicationStart()
 		{
 			BS_Utils.Utilities.BSEvents.OnLoad();
@@ -150,9 +151,11 @@ namespace NoteSliceVisualizer
 			ConfigHelper.LoadConfig();
 		}
 
+		[OnExit]
 		public void OnApplicationQuit()
 		{
 			BS_Utils.Utilities.BSEvents.gameSceneLoaded -= GameSceneLoaded;
+			BS_Utils.Utilities.BSEvents.menuSceneLoadedFresh -= MenuSceneLoadedFresh;
 		}
 
 		public void OnSceneLoaded(global::UnityEngine.SceneManagement.Scene scene, global::UnityEngine.SceneManagement.LoadSceneMode sceneMode)
@@ -185,10 +188,5 @@ namespace NoteSliceVisualizer
 			}
 		}
 
-		public void OnFixedUpdate()
-		{
-		}
-
-		#endregion // IBeatSaberPlugin
 	}
 }

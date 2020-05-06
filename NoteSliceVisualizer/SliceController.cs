@@ -1,25 +1,24 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace NoteSliceVisualizer
 {
-	public class SliceController
+	public class SliceController : MonoBehaviour
 	{
-		private readonly float _uiScale;
-		private readonly RectTransform _blockTransform;
-		private readonly RectTransform _blockMaskTransform;
-		private readonly RectTransform _noteMaskTransform;
-		private readonly RectTransform _noteMaskInverseTransform;
-		private readonly RectTransform _sliceTransform;
-		private readonly RectTransform _cutOffsetTransform;
-		private readonly RectTransform _noteArrowTransform;
-		private readonly CanvasGroup _canvasGroup;
-		private readonly RawImage _backgroundImage;
-		private readonly RawImage _noteArrowImage;
-		private readonly RawImage _cutSliceImage;
-		private readonly RawImage _cutOffsetImage;
+		private float _uiScale;
+		private RectTransform _blockTransform;
+		private RectTransform _blockMaskTransform;
+		private RectTransform _noteMaskTransform;
+		private RectTransform _noteMaskInverseTransform;
+		private RectTransform _sliceTransform;
+		private RectTransform _cutOffsetTransform;
+		private RectTransform _noteArrowTransform;
+		private CanvasGroup _canvasGroup;
+		private RawImage _backgroundImage;
+		private RawImage _noteArrowImage;
+		private RawImage _cutSliceImage;
+		private RawImage _cutOffsetImage;
 		private Color _backgroundColor;
 		private float _timeSinceSliced;
 		private bool _isAlive = true;
@@ -35,20 +34,20 @@ namespace NoteSliceVisualizer
 		private readonly bool _shouldRotateUIWithNote = ConfigHelper.Config.RotateUIWithNote;
 		private readonly bool _shouldUpdateColor = !ConfigHelper.Config.TwoNoteMode;
 		private readonly float _maxAlpha = ConfigHelper.Config.Alpha;
-		private readonly float _popDuration = ConfigHelper.Config.PopDuration;
-		private readonly float _delayDuration = ConfigHelper.Config.DelayDuration;
-		private readonly float _fadeDuration = ConfigHelper.Config.FadeDuration;
+		private float _popDuration = ConfigHelper.Config.PopDuration;
+		private float _delayDuration = ConfigHelper.Config.DelayDuration;
+		private float _fadeDuration = ConfigHelper.Config.FadeDuration;
 
-		public SliceController(GameObject noteUI)
+		public SliceController()
 		{
-			_blockTransform = noteUI.GetComponentsInChildren<RectTransform>().First(o => o.name == "Block");
-			_blockMaskTransform = noteUI.GetComponentsInChildren<RectTransform>().First(o => o.name == "BlockMask");
-			_noteArrowTransform = noteUI.GetComponentsInChildren<RectTransform>().First(o => o.name == "NoteArrowImage");
-			_noteMaskTransform = noteUI.GetComponentsInChildren<RectTransform>().First(o => o.name == "NoteMask");
-			_noteMaskInverseTransform = noteUI.GetComponentsInChildren<RectTransform>().First(o => o.name == "NoteMaskInverse");
-			_sliceTransform = noteUI.GetComponentsInChildren<RectTransform>().First(o => o.name == "NoteSlice");
-			_cutOffsetTransform = noteUI.GetComponentsInChildren<RectTransform>().First(o => o.name == "MissedAreaImage");
-			_canvasGroup = noteUI.GetComponent<CanvasGroup>();
+			_blockTransform = gameObject.GetComponentsInChildren<RectTransform>().First(o => o.name == "Block");
+			_blockMaskTransform = gameObject.GetComponentsInChildren<RectTransform>().First(o => o.name == "BlockMask");
+			_noteArrowTransform = gameObject.GetComponentsInChildren<RectTransform>().First(o => o.name == "NoteArrowImage");
+			_noteMaskTransform = gameObject.GetComponentsInChildren<RectTransform>().First(o => o.name == "NoteMask");
+			_noteMaskInverseTransform = gameObject.GetComponentsInChildren<RectTransform>().First(o => o.name == "NoteMaskInverse");
+			_sliceTransform = gameObject.GetComponentsInChildren<RectTransform>().First(o => o.name == "NoteSlice");
+			_cutOffsetTransform = gameObject.GetComponentsInChildren<RectTransform>().First(o => o.name == "MissedAreaImage");
+			_canvasGroup = gameObject.GetComponent<CanvasGroup>();
 
 			_backgroundImage = _blockTransform.GetComponent<RawImage>();
 			_noteArrowImage = _noteArrowTransform.GetComponent<RawImage>();
