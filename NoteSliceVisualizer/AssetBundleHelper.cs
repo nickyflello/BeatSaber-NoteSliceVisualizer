@@ -1,11 +1,6 @@
-﻿using BS_Utils.Utilities;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -16,6 +11,7 @@ namespace NoteSliceVisualizer
 		private static AssetBundle _assetBundle;
 
 		public static GameObject Canvas;
+		public static GameObject NoteUI;
 		public static Texture TriangleTexture;
 
 		public static void LoadAssetBundle()
@@ -31,6 +27,7 @@ namespace NoteSliceVisualizer
 				}
 
 				Canvas = LoadAsset<GameObject>("Canvas");
+				NoteUI = LoadAsset<GameObject>("NoteUI");
 				TriangleTexture = LoadAsset<Texture>("Triangle");
 			}
 		}

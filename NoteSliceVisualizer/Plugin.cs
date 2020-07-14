@@ -5,12 +5,13 @@ using UnityEngine;
 
 namespace NoteSliceVisualizer
 {
-	public class Plugin : IBeatSaberPlugin
+	[Plugin(RuntimeOptions.SingleStartInit)]
+	public class Plugin
 	{
 		ColorManager _colorManager;
-		BeatmapObjectSpawnController _spawnController;
+		BeatmapObjectManager _spawnController;
 
-		Transform _sliceParent;
+		Transform _parentCanvas;
 		SliceController[] _sliceControllers;
 		bool _logNotesCut = false;
 
@@ -41,11 +42,11 @@ namespace NoteSliceVisualizer
 			}
 
 			_colorManager = GameObject.FindObjectOfType<ColorManager>();
-			_spawnController = GameObject.FindObjectOfType<BeatmapObjectSpawnController>();
+			_spawnController = GameObject.FindObjectOfType<BeatmapObjectManager>();
 			_spawnController.noteWasCutEvent += OnNoteCut;
 
-			_sliceParent = new GameObject("Slice Parent").transform;
-			
+			_parentCanvas = GameObject.Instantiate(AssetBundleHelper.Canvas).transform;
+
 			if (TwoNoteMode)
 			{
 				_sliceControllers = new SliceController[2];
@@ -79,34 +80,33 @@ namespace NoteSliceVisualizer
 				}
 			}
 
-			_sliceParent.localPosition = Position;
-			_sliceParent.eulerAngles = Rotation;
-			_sliceParent.localScale *= Scale;
+			_parentCanvas.localPosition = Position;
+			_parentCanvas.eulerAngles = Rotation;
+			_parentCanvas.localScale *= Scale;
 		}
 
 		private SliceController CreateSliceController(float posX, float posY)
 		{
-			GameObject canvas = GameObject.Instantiate(AssetBundleHelper.Canvas);
-			canvas.transform.parent = _sliceParent.transform;
-			canvas.transform.localPosition = new Vector3(posX, posY);
-			return new SliceController(canvas);
+			GameObject slicedNoteUI = GameObject.Instantiate(AssetBundleHelper.NoteUI);
+			slicedNoteUI.transform.SetParent(_parentCanvas.transform, false);
+			slicedNoteUI.transform.localPosition = new Vector3(posX, posY);
+			return slicedNoteUI.AddComponent<SliceController>();
 		}
 
-		private void OnNoteCut(BeatmapObjectSpawnController spawnController, INoteController noteController, NoteCutInfo info)
+		private void OnNoteCut(INoteController noteController, NoteCutInfo info)
 		{
 			NoteData data = noteController.noteData;
-			if (ShouldDisplayNote(data))
+			if (ShouldDisplayNote(data, info))
 			{
 				Vector3 center = noteController.noteTransform.position;
 				Vector3 localCutPoint = info.cutPoint - center;
-				float rotation = noteController.noteTransform.eulerAngles.z;
-				rotation = Mathf.Round(rotation / 45f) * 45f;
+				NoteCutDirection directionType = data.cutDirection;
 
 				if (TwoNoteMode)
 				{
 					int index = (int)info.saberType;
 					SliceController sliceController = _sliceControllers[index];
-					sliceController.UpdateSlice(localCutPoint, info.cutNormal, rotation);
+					sliceController.UpdateSlice(localCutPoint, info.cutNormal, directionType);
 				}
 				else
 				{
@@ -115,7 +115,7 @@ namespace NoteSliceVisualizer
 
 					Color color = UseCustomNoteColors ? _colorManager.ColorForSaberType(info.saberType) : _defaultColors[(int)info.saberType];
 					sliceController.UpdateBlockColor(color);
-					sliceController.UpdateSlice(localCutPoint, info.cutNormal, rotation);
+					sliceController.UpdateSlice(localCutPoint, info.cutNormal, directionType);
 				}
 
 				if (_logNotesCut)
@@ -129,20 +129,21 @@ namespace NoteSliceVisualizer
 			}
 		}
 
-		private bool ShouldDisplayNote(NoteData data)
+		private bool ShouldDisplayNote(NoteData data, NoteCutInfo cutInfo)
 		{
 			int lineIndex = data.lineIndex;
 			int layer = (int)data.noteLineLayer;
 
 			// Mapping Extensions may place notes beyond the 12 note array. Ignore these.
-			return TwoNoteMode ||
+			return cutInfo.allIsOK &&
+				(TwoNoteMode ||
 				(lineIndex >= 0 &&
 				lineIndex <= 3 &&
 				layer >= 0 &&
-				layer <= 2);
+				layer <= 2));
 		}
 
-		#region IBeatSaberPlugin
+		[OnStart]
 		public void OnApplicationStart()
 		{
 			BS_Utils.Utilities.BSEvents.OnLoad();
@@ -151,9 +152,11 @@ namespace NoteSliceVisualizer
 			ConfigHelper.LoadConfig();
 		}
 
+		[OnExit]
 		public void OnApplicationQuit()
 		{
 			BS_Utils.Utilities.BSEvents.gameSceneLoaded -= GameSceneLoaded;
+			BS_Utils.Utilities.BSEvents.menuSceneLoadedFresh -= MenuSceneLoadedFresh;
 		}
 
 		public void OnSceneLoaded(global::UnityEngine.SceneManagement.Scene scene, global::UnityEngine.SceneManagement.LoadSceneMode sceneMode)
@@ -190,10 +193,5 @@ namespace NoteSliceVisualizer
 			}
 		}
 
-		public void OnFixedUpdate()
-		{
-		}
-
-		#endregion // IBeatSaberPlugin
 	}
 }
