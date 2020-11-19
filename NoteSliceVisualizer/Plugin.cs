@@ -1,5 +1,7 @@
-﻿using IPA;
+using BS_Utils.Utilities;
+using IPA;
 using System;
+using System.Linq;
 using UnityEngine;
 
 namespace NoteSliceVisualizer
@@ -41,7 +43,7 @@ namespace NoteSliceVisualizer
 			}
 
 			_colorManager = GameObject.FindObjectOfType<ColorManager>();
-			_spawnController = GameObject.FindObjectOfType<BeatmapObjectManager>();
+			_spawnController = Resources.FindObjectsOfTypeAll<BeatmapObjectExecutionRatingsRecorder>().LastOrDefault().GetPrivateField<BeatmapObjectManager>("_beatmapObjectManager");//GameObject.FindObjectOfType<BeatmapObjectManager>();
 			_spawnController.noteWasCutEvent += OnNoteCut;
 
 			_parentCanvas = GameObject.Instantiate(AssetBundleHelper.Canvas).transform;
@@ -57,7 +59,7 @@ namespace NoteSliceVisualizer
 					float posY = 0f;
 
 					SliceController controller = CreateSliceController(posX, posY);
-					Color color = UseCustomNoteColors ? _colorManager.ColorForNoteType((NoteType)index) : _defaultColors[index];
+					Color color = UseCustomNoteColors ? _colorManager.ColorForType((ColorType)index) : _defaultColors[index];
 					controller.UpdateBlockColor(color);
 					_sliceControllers[index] = controller;
 				}
@@ -92,7 +94,7 @@ namespace NoteSliceVisualizer
 			return slicedNoteUI.AddComponent<SliceController>();
 		}
 
-		private void OnNoteCut(INoteController noteController, NoteCutInfo info)
+		private void OnNoteCut(NoteController noteController, NoteCutInfo info)
 		{
 			NoteData data = noteController.noteData;
 			if (ShouldDisplayNote(data, info))
