@@ -29,7 +29,7 @@ namespace NoteSliceVisualizer
 		static float Separation => ConfigHelper.Config.Separation * 0.8f; // x0.8 to have 1.0 as the default config
 		static bool TwoNoteMode => ConfigHelper.Config.TwoNoteMode;
 
-		private void MenuSceneLoadedFresh()
+		private void MenuSceneLoadedFresh(ScenesTransitionSetupDataSO scenesTransitionSetupDataSO)
 		{
 			Utilities.Initialize();
 			AssetBundleHelper.LoadAssetBundle();
@@ -148,7 +148,7 @@ namespace NoteSliceVisualizer
 		public void OnApplicationStart()
 		{
 			BS_Utils.Utilities.BSEvents.OnLoad();
-			BS_Utils.Utilities.BSEvents.menuSceneLoadedFresh += MenuSceneLoadedFresh;
+			BS_Utils.Utilities.BSEvents.lateMenuSceneLoadedFresh += MenuSceneLoadedFresh;
 			BS_Utils.Utilities.BSEvents.gameSceneLoaded += GameSceneLoaded;
 			ConfigHelper.LoadConfig();
 		}
@@ -157,7 +157,7 @@ namespace NoteSliceVisualizer
 		public void OnApplicationQuit()
 		{
 			BS_Utils.Utilities.BSEvents.gameSceneLoaded -= GameSceneLoaded;
-			BS_Utils.Utilities.BSEvents.menuSceneLoadedFresh -= MenuSceneLoadedFresh;
+			BS_Utils.Utilities.BSEvents.lateMenuSceneLoadedFresh -= MenuSceneLoadedFresh;
 		}
 
 		public void OnSceneLoaded(global::UnityEngine.SceneManagement.Scene scene, global::UnityEngine.SceneManagement.LoadSceneMode sceneMode)
