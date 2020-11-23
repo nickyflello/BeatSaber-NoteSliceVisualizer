@@ -2,6 +2,7 @@
 using IPA;
 using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace NoteSliceVisualizer
 {
@@ -149,12 +150,14 @@ namespace NoteSliceVisualizer
 			BS_Utils.Utilities.BSEvents.OnLoad();
 			BS_Utils.Utilities.BSEvents.menuSceneLoadedFresh += MenuSceneLoadedFresh;
 			BS_Utils.Utilities.BSEvents.gameSceneLoaded += GameSceneLoaded;
+			SceneManager.activeSceneChanged += OnActiveSceneChanged;
 			ConfigHelper.LoadConfig();
 		}
 
 		[OnExit]
 		public void OnApplicationQuit()
 		{
+			SceneManager.activeSceneChanged -= OnActiveSceneChanged;
 			BS_Utils.Utilities.BSEvents.gameSceneLoaded -= GameSceneLoaded;
 			BS_Utils.Utilities.BSEvents.menuSceneLoadedFresh -= MenuSceneLoadedFresh;
 		}

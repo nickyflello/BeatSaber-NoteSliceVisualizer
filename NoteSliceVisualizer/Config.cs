@@ -66,5 +66,12 @@ namespace NoteSliceVisualizer
 		public float Separation = 1f;
 		public bool TwoNoteMode = false;
 		//public bool LogToFile = false;
+
+		public bool ScaleWithTimeDependency = false;
+		public float TDCutLineWidthScale = 20f;
+
+		public bool ShowEarlyLateColors = false;
+		public Color CutLineEarlyColor = new Color(0f, 1f, 0f);
+		public Color CutLineLateColor = new Color(1f, 0f, 0f);
 	}
 }

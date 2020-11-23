@@ -29,6 +29,7 @@ namespace NoteSliceVisualizer
 		private readonly Color _cutOffsetColor = ConfigHelper.Config.CutOffsetColor;
 		private readonly float _cutLineWidth = ConfigHelper.Config.CutLineWidth;
 		private readonly float _cutLineLengthScale = ConfigHelper.Config.CutLineLengthScale;
+		private readonly float _TDCutLineWidthScale = ConfigHelper.Config.ScaleWithTimeDependency ? ConfigHelper.Config.TDCutLineWidthScale : 0f;
 		private readonly float _cutLineSensitivity = ConfigHelper.Config.CutLineSensitivity;
 
 		private readonly bool _shouldRotateUIWithNote = ConfigHelper.Config.RotateUIWithNote;
@@ -77,6 +78,19 @@ namespace NoteSliceVisualizer
 
 		public void UpdateSlice(Vector3 cutPoint, Vector3 cutPlaneNormal, NoteCutDirection noteDirectionType)
 		{
+			if (ConfigHelper.Config.ShowEarlyLateColors)
+			{
+				bool isLateCut = cutPoint.z > 0f; // otherwise early cut
+				if (isLateCut)
+				{
+					_cutSliceImage.color = ConfigHelper.Config.CutLineLateColor;
+				}
+				else
+				{
+					_cutSliceImage.color = ConfigHelper.Config.CutLineEarlyColor;
+				}
+			}
+
 			cutPoint = new Vector3(cutPoint.x, cutPoint.y);
 			Vector3 uiCutPoint = cutPoint * _uiScale * _cutLineSensitivity;
 
@@ -97,6 +111,11 @@ namespace NoteSliceVisualizer
 			float cutPointDistance = cutPoint.magnitude;
 			_cutOffsetTransform.sizeDelta = new Vector2(_cutOffsetTransform.rect.width, cutPointDistance * _uiScale * _cutLineSensitivity);
 			_cutOffsetTransform.localRotation = Quaternion.Euler(0f, 0f, missedAreaRotation);
+
+			float timeDependency = Mathf.Abs(cutPlaneNormal.z);
+			float cutLineHeight = _sliceTransform.sizeDelta.x;
+			float cutLineWidth = _cutLineWidth * (1 + (timeDependency * _TDCutLineWidthScale));
+			_sliceTransform.sizeDelta = new Vector2(cutLineHeight, cutLineWidth);
 
 			_timeSinceSliced = 0f;
 			_isAlive = true;
