@@ -1,5 +1,7 @@
-﻿using IPA;
+using BS_Utils.Utilities;
+using IPA;
 using System;
+using System.Linq;
 using UnityEngine;
 
 namespace NoteSliceVisualizer
@@ -27,7 +29,7 @@ namespace NoteSliceVisualizer
 		static float Separation => ConfigHelper.Config.Separation * 0.8f; // x0.8 to have 1.0 as the default config
 		static bool TwoNoteMode => ConfigHelper.Config.TwoNoteMode;
 
-		private void MenuSceneLoadedFresh()
+		private void MenuSceneLoadedFresh(ScenesTransitionSetupDataSO scenesTransitionSetupDataSO)
 		{
 			Utilities.Initialize();
 			AssetBundleHelper.LoadAssetBundle();
@@ -41,7 +43,7 @@ namespace NoteSliceVisualizer
 			}
 
 			_colorManager = GameObject.FindObjectOfType<ColorManager>();
-			_spawnController = GameObject.FindObjectOfType<BeatmapObjectManager>();
+			_spawnController = Resources.FindObjectsOfTypeAll<BeatmapObjectExecutionRatingsRecorder>().LastOrDefault().GetPrivateField<BeatmapObjectManager>("_beatmapObjectManager");//GameObject.FindObjectOfType<BeatmapObjectManager>();
 			_spawnController.noteWasCutEvent += OnNoteCut;
 
 			_parentCanvas = GameObject.Instantiate(AssetBundleHelper.Canvas).transform;
@@ -57,7 +59,7 @@ namespace NoteSliceVisualizer
 					float posY = 0f;
 
 					SliceController controller = CreateSliceController(posX, posY);
-					Color color = UseCustomNoteColors ? _colorManager.ColorForNoteType((NoteType)index) : _defaultColors[index];
+					Color color = UseCustomNoteColors ? _colorManager.ColorForType((ColorType)index) : _defaultColors[index];
 					controller.UpdateBlockColor(color);
 					_sliceControllers[index] = controller;
 				}
@@ -92,7 +94,7 @@ namespace NoteSliceVisualizer
 			return slicedNoteUI.AddComponent<SliceController>();
 		}
 
-		private void OnNoteCut(INoteController noteController, NoteCutInfo info)
+		private void OnNoteCut(NoteController noteController, NoteCutInfo info)
 		{
 			NoteData data = noteController.noteData;
 			if (ShouldDisplayNote(data, info))
@@ -146,7 +148,7 @@ namespace NoteSliceVisualizer
 		public void OnApplicationStart()
 		{
 			BS_Utils.Utilities.BSEvents.OnLoad();
-			BS_Utils.Utilities.BSEvents.menuSceneLoadedFresh += MenuSceneLoadedFresh;
+			BS_Utils.Utilities.BSEvents.lateMenuSceneLoadedFresh += MenuSceneLoadedFresh;
 			BS_Utils.Utilities.BSEvents.gameSceneLoaded += GameSceneLoaded;
 			ConfigHelper.LoadConfig();
 		}
@@ -155,7 +157,7 @@ namespace NoteSliceVisualizer
 		public void OnApplicationQuit()
 		{
 			BS_Utils.Utilities.BSEvents.gameSceneLoaded -= GameSceneLoaded;
-			BS_Utils.Utilities.BSEvents.menuSceneLoadedFresh -= MenuSceneLoadedFresh;
+			BS_Utils.Utilities.BSEvents.lateMenuSceneLoadedFresh -= MenuSceneLoadedFresh;
 		}
 
 		public void OnSceneLoaded(global::UnityEngine.SceneManagement.Scene scene, global::UnityEngine.SceneManagement.LoadSceneMode sceneMode)
